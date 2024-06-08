@@ -1,6 +1,6 @@
 # Environment for Bluemap Setups
 After starting the containers, you need to accept the download for bluemap.
-`./data/minecraft/bluemap/core.conf`
+`data/minecraft/plugins/BlueMap/core.conf`
 
 ## (Sub)domain
 If you want BlueMap on a domain `http://www.example.com` or subdomain `http://bluemap.example.com` use this example:
