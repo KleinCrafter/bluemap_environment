@@ -1,0 +1,40 @@
+
+networks:
+  proxy_traefik:
+
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    networks:
+      proxy_traefik:
+    ports:
+      - 25565:25565
+    environment:
+      EULA: "true"
+      TYPE: PAPER
+      VERSION: 1.20.6
+      INIT_MEMORY: 1G
+      MAX_MEMORY: 1G
+      MODRINTH_PROJECTS: bluemap
+      MODRINTH_ALLOWED_VERSION_TYPE: release
+    volumes:
+      - ./data/minecraft:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.minecraft.rule=Host(`127.0.0.1`) && PathPrefix(`/bluemap/`)
+      - traefik.http.routers.minecraft.entrypoints=web
+      - traefik.http.services.minecraft.loadbalancer.server.port=8100
+      - traefik.http.routers.minecraft.middlewares=bluemapprefix
+      - traefik.http.middlewares.bluemapprefix.stripprefix.prefixes=/bluemap/
+
+  traefik:
+    image: traefik:2.11
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data/traefik:/etc/traefik
+    networks:
+      proxy_traefik:
